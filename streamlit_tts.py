@@ -1,7 +1,7 @@
 import streamlit as st
 from gtts import gTTS
-import os
 import io
+import base64
 
 # Streamlit app title
 st.title("Text-to-Speech Converter")
@@ -15,19 +15,19 @@ if st.button("Convert to Audio"):
         # Generate audio
         tts = gTTS(text, lang='en', tld='co.in')
         audio_bytes = io.BytesIO()
-        tts.save(audio_bytes)
+        tts.write_to_fp(audio_bytes)
 
-        # Display audio player
-        st.audio(audio_bytes.getvalue(), format="audio/mp3")
-
-        # Save audio to file
+        # Save audio to a fixed filename
         audio_filename = "output.mp3"
         with open(audio_filename, "wb") as audio_file:
-            audio_file.write(audio_bytes.getvalue())
-        st.markdown(f"[Download Audio](data:audio/mp3;base64,{audio_bytes.getvalue().hex()},output.mp3)")
+            audio_file.write(audio_bytes.read())
+
+        audio_b64 = base64.b64encode(audio_bytes.getvalue()).decode()
+        href = f'<a href="data:audio/mp3;base64,{audio_b64}" download="output.mp3">Download Audio</a>'
+        st.markdown(href, unsafe_allow_html=True)
 
 # Info and instructions
 st.markdown("Instructions:")
 st.markdown("1. Enter the text in the text box.")
 st.markdown("2. Click the 'Convert to Audio' button.")
-st.markdown("3. Play the audio or download it using the link below.")
+st.markdown("3. Download it using the link below.")
