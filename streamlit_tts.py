@@ -31,13 +31,3 @@ st.markdown("Instructions:")
 st.markdown("1. Enter the text in the text box.")
 st.markdown("2. Click the 'Convert to Audio' button.")
 st.markdown("3. Play the audio or download it using the link below.")
-
-# Footer
-st.markdown("Made with ❤️ by Your Name")
-
-# Hide Streamlit menu
-st.markdown("""
-    <style>
-    #MainMenu {visibility: hidden;}
-    </style>
-    """, unsafe_allow_html=True)
