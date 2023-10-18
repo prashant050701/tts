@@ -25,7 +25,13 @@ if st.button("Convert to Audio"):
         audio_b64 = base64.b64encode(audio_bytes.getvalue()).decode()
         href = f'<a href="data:audio/mp3;base64,{audio_b64}" download="output.mp3">Download Audio</a>'
         st.markdown(href, unsafe_allow_html=True)
-st.beta_set_page_config(footer=False)
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # Info and instructions
 st.markdown("Instructions:")
 st.markdown("1. Enter the text in the text box.")
