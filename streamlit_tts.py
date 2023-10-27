@@ -21,7 +21,6 @@ if video_file:
     audio_filename = tempfile.mktemp(suffix=".mp3")
     audio.write_audiofile(audio_filename)
     
-    # Now we'll handle the audio segment selection and export
     # Use a slider to allow the user to select a range of the audio to export
     selection = st.slider(
         "Select a range (in seconds):",
@@ -35,11 +34,12 @@ if video_file:
         selected_segment = audio.subclip(start_time, end_time)
         selected_audio_filename = tempfile.mktemp(suffix=".mp3")
         selected_segment.write_audiofile(selected_audio_filename)
-        st.markdown(f'<a href="{selected_audio_filename}" download>Download Selected Range</a>', unsafe_allow_html=True)
-
-hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            </style>
-            """
+        
+        # Use st.download_button to provide a download link for the audio file
+        with open(selected_audio_filename, "rb") as f:
+            st.download_button(
+                label="Download Selected Range",
+                data=f,
+                file_name="selected_range.mp3",
+                mime="audio/mp3"
+            )
