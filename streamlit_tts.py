@@ -1,46 +1,39 @@
 import streamlit as st
-from moviepy.editor import *
-import tempfile
+from gtts import gTTS
+import io
 import base64
 
-# Streamlit app title for the new feature
-st.title("Video to Audio Extractor")
+# Streamlit app title
+st.title("Text-to-Speech Converter")
 
-# Video file upload
-video_file = st.file_uploader("Upload a video file:", type=['mp4', 'mkv', 'avi', 'mov'])
+# Text input
+text = st.text_area("Enter the text you want to convert to audio:")
 
-if video_file:
-    # Create a temporary file to store the uploaded video file
-    tfile = tempfile.NamedTemporaryFile(delete=False) 
-    tfile.write(video_file.read())
-    
-    # Load the video file from the temporary file
-    video_clip = VideoFileClip(tfile.name)
-    
-    # Convert video to audio
-    audio = video_clip.audio
-    audio_filename = tempfile.mktemp(suffix=".mp3")
-    audio.write_audiofile(audio_filename)
-    
-    # Use a slider to allow the user to select a range of the audio to export
-    selection = st.slider(
-        "Select a range (in seconds):",
-        0, int(video_clip.duration),
-        (0, int(video_clip.duration))
-    )
+# Convert button
+if st.button("Convert to Audio"):
+    if text:
+        # Generate audio
+        tts = gTTS(text, lang='en', tld='co.in')
+        audio_bytes = io.BytesIO()
+        tts.write_to_fp(audio_bytes)
 
-    # Export selected audio range
-    if st.button("Export Selected Range"):
-        start_time, end_time = selection
-        selected_segment = audio.subclip(start_time, end_time)
-        selected_audio_filename = tempfile.mktemp(suffix=".mp3")
-        selected_segment.write_audiofile(selected_audio_filename)
+        # Save audio to a fixed filename
+        audio_filename = "output.mp3"
+        with open(audio_filename, "wb") as audio_file:
+            audio_file.write(audio_bytes.read())
 
-        # Read the audio file and encode it to base64
-        with open(selected_audio_filename, "rb") as f:
-            audio_bytes = f.read()
-        audio_b64 = base64.b64encode(audio_bytes).decode()
-
-        # Create a download link for the audio file
-        href = f'<a href="data:audio/mp3;base64,{audio_b64}" download="selected_range.mp3">Download Selected Range</a>'
+        audio_b64 = base64.b64encode(audio_bytes.getvalue()).decode()
+        href = f'<a href="data:audio/mp3;base64,{audio_b64}" download="output.mp3">Download Audio</a>'
         st.markdown(href, unsafe_allow_html=True)
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+# Info and instructions
+st.markdown("Instructions:")
+st.markdown("1. Enter the text in the text box.")
+st.markdown("2. Click the 'Convert to Audio' button.")
+st.markdown("3. Download it using the link below.")
