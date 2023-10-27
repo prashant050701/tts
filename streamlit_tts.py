@@ -36,3 +36,10 @@ if video_file:
         selected_audio_filename = tempfile.mktemp(suffix=".mp3")
         selected_segment.write_audiofile(selected_audio_filename)
         st.markdown(f'<a href="{selected_audio_filename}" download>Download Selected Range</a>', unsafe_allow_html=True)
+
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
