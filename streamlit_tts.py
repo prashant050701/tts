@@ -1,6 +1,7 @@
 import streamlit as st
 from moviepy.editor import *
 import tempfile
+import base64
 
 # Streamlit app title for the new feature
 st.title("Video to Audio Extractor")
@@ -34,12 +35,12 @@ if video_file:
         selected_segment = audio.subclip(start_time, end_time)
         selected_audio_filename = tempfile.mktemp(suffix=".mp3")
         selected_segment.write_audiofile(selected_audio_filename)
-        
-        # Use st.download_button to provide a download link for the audio file
+
+        # Read the audio file and encode it to base64
         with open(selected_audio_filename, "rb") as f:
-            st.download_button(
-                label="Download Selected Range",
-                data=f,
-                file_name="selected_range.mp3",
-                mime="audio/mp3"
-            )
+            audio_bytes = f.read()
+        audio_b64 = base64.b64encode(audio_bytes).decode()
+
+        # Create a download link for the audio file
+        href = f'<a href="data:audio/mp3;base64,{audio_b64}" download="selected_range.mp3">Download Selected Range</a>'
+        st.markdown(href, unsafe_allow_html=True)
