@@ -7,11 +7,15 @@ import tempfile
 st.title("Video to Audio Extractor")
 
 # Video file upload
-video_file = st.file_uploader("Upload a video file:", type=['mp4', 'mkv', 'avi'])
+video_file = st.file_uploader("Upload a video file:", type=['mp4', 'mkv', 'avi', 'mov'])
 
 if video_file:
-    # Load the video file
-    video_clip = VideoFileClip(video_file)
+    # Create a temporary file to store the uploaded video file
+    tfile = tempfile.NamedTemporaryFile(delete=False) 
+    tfile.write(video_file.read())
+    
+    # Load the video file from the temporary file
+    video_clip = VideoFileClip(tfile.name)
     
     # Convert video to audio
     audio = video_clip.audio
@@ -24,7 +28,7 @@ if video_file:
 
     # Display audio waveform and selection bar
     audio_segment = AudioSegment.from_file(audio_filename)
-    waveform = st.audio_waveform(audio_segment)
+    waveform = st.audio_waveform(audio_segment)  # Note: st.audio_waveform is fictional, replace with actual waveform rendering
     selection = st.slider(
         "Select a range (in seconds):",
         0, len(audio_segment) // 1000,
